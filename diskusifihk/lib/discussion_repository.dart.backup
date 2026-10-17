@@ -1,0 +1,113 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'models/discussion.dart';
+import 'models/comment.dart';
+
+class DiscussionRepository {
+  DiscussionRepository._internal();
+  static final DiscussionRepository _instance = DiscussionRepository._internal();
+  factory DiscussionRepository() => _instance;
+
+  static const String _discussionsKey = 'discussions_key';
+  static const String _userIdKey = 'user_id_key';
+
+  final List<Discussion> _discussions = [];
+  bool _isInitialized = false;
+
+  List<Discussion> get discussions => List.unmodifiable(_discussions);
+
+  Future<String?> getCurrentUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_userIdKey);
+  }
+
+  Future<void> setUserId(String userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_userIdKey, userId);
+  }
+
+  Future<void> _loadFromPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? jsonString = prefs.getString(_discussionsKey);
+    if (jsonString != null) {
+      try {
+        final List<dynamic> jsonList = jsonDecode(jsonString);
+        _discussions.clear();
+        for (var json in jsonList) {
+          _discussions.add(Discussion.fromJson(json));
+        }
+      } catch (e) {
+        debugPrint('Error loading discussions: $e');
+      }
+    }
+  }
+
+  Future<void> _saveToPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<dynamic> jsonList =
+        _discussions.map((d) => d.toJson()).toList();
+    final String jsonString = jsonEncode(jsonList);
+    await prefs.setString(_discussionsKey, jsonString);
+  }
+
+  Future<void> init() async {
+    if (_isInitialized) return;
+    await _loadFromPrefs();
+    _isInitialized = true;
+  }
+
+  void addDiscussion(Discussion discussion) {
+    // Ensure discussion has userId and likeCount (should already be set)
+    _discussions.add(discussion);
+    _saveToPrefs();
+  }
+
+  void addComment(String discussionId, Comment comment) {
+    final discussion = _discussions.firstWhere(
+      (d) => d.id == discussionId,
+      orElse: () => throw Exception('Discussion not found'),
+    );
+    discussion.comments.add(comment);
+    _saveToPrefs();
+  }
+
+  // Generate some sample data (used when no saved data)
+  void generateSampleData() {
+    if (_discussions.isNotEmpty) return;
+
+    const categories = ['Fiqih Ibadah', 'Fiqih Muamalah', 'Fiqih Jinayah', 'Fiqih Keluarga'];
+    final now = DateTime.now();
+    // Use placeholder userId for sample data; in real app, this would be the current user
+    const String placeholderUserId = 'sample_user';
+
+    for (int i = 1; i <= 3; i++) {
+      final discussion = Discussion(
+        id: 'discussion_$i',
+        title: 'Topik Diskusi $i: Contoh Pertanyaan Fiqih Kontemporer',
+        content: 'Ini adalah isi topik diskusi contoh untuk demonstrasi aplikasi. Topik ini membahas tentang masalah fiqih yang relevan dengan zaman modern.',
+        category: categories[i - 1],
+        userId: placeholderUserId,
+        timestamp: now.subtract(Duration(days: i)),
+        likeCount: 0,
+        comments: [
+          Comment(
+            id: 'comment_${i}_1',
+            content: 'Ini adalah contoh komentar pertama pada topik ini.',
+            userId: placeholderUserId,
+            timestamp: now.subtract(Duration(days: i, hours: 1)),
+            likeCount: 0,
+          ),
+          Comment(
+            id: 'comment_${i}_2',
+            content: 'Contoh komentar kedua dengan pendapat yang berbeda.',
+            userId: placeholderUserId,
+            timestamp: now.subtract(Duration(days: i, hours: 2)),
+            likeCount: 0,
+          ),
+        ],
+      );
+      _discussions.add(discussion);
+    }
+  }
+}
