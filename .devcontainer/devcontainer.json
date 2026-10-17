@@ -1,0 +1,3 @@
+{
+  "postStartCommand": "nohup fcc-server > /tmp/fcc-server.log 2>&1 &"
+}
