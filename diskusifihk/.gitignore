@@ -1,0 +1,26 @@
+# Dart and Flutter
+.dart_tool/
+.packages
+.build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.symlinks
+flutter-driver.log
+ionicons_ttf.ttf
+
+# Android
+android/app/debug/
+android/app/profile/
+android/app/release/
+android/local.properties
+android/key.properties
+android/key.jks
+
+# iOS
+ios/Flutter/App.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Flutter.xcconfig
+ios/Flutter/Generated.xcconfig
+ios/Pods
+ios/Symlinks
+ios/Flutter/Flutter-Generated.xcconfig
