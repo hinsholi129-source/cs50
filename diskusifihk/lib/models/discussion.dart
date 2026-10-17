@@ -7,6 +7,8 @@ class Discussion {
   final String content;
   final String category;
   final String? imageUrl; // URL gambar untuk topik (opsional)
+  final String? hukum; // Referensi hukum terkait
+  final String? sumber; // Sumber informasi
   final DateTime timestamp;
   final List<Comment> comments;
   final String userId; // ID pengguna yang membuat topik
@@ -18,6 +20,8 @@ class Discussion {
     required this.content,
     required this.category,
     this.imageUrl,
+    this.hukum,
+    this.sumber,
     required this.userId,
     DateTime? timestamp,
     List<Comment>? comments,
@@ -34,6 +38,8 @@ class Discussion {
         'content': content,
         'category': category,
         'imageUrl': imageUrl,
+        'hukum': hukum,
+        'sumber': sumber,
         'timestamp': timestamp.toIso8601String(),
         'userId': userId,
         'likeCount': likeCount,
@@ -47,6 +53,8 @@ class Discussion {
         content: json['content'],
         category: json['category'],
         imageUrl: json['imageUrl'],
+        hukum: json['hukum'],
+        sumber: json['sumber'],
         userId: json['userId'],
         timestamp: DateTime.parse(json['timestamp']),
         likeCount: json['likeCount'],
@@ -62,6 +70,8 @@ class Discussion {
     String? content,
     String? category,
     String? imageUrl,
+    String? hukum,
+    String? sumber,
     DateTime? timestamp,
     List<Comment>? comments,
     String? userId,
@@ -73,6 +83,8 @@ class Discussion {
       content: content ?? this.content,
       category: category ?? this.category,
       imageUrl: imageUrl ?? this.imageUrl,
+      hukum: hukum ?? this.hukum,
+      sumber: sumber ?? this.sumber,
       userId: userId ?? this.userId,
       timestamp: timestamp ?? this.timestamp,
       comments: comments ?? this.comments,

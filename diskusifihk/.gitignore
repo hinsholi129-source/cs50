@@ -23,4 +23,4 @@ ios/Flutter/Flutter.xcconfig
 ios/Flutter/Generated.xcconfig
 ios/Pods
 ios/Symlinks
-ios/Flutter/Flutter-Generated.xcconfig
+ios/Flutter/Flutter-Generated.xcconfigbuild/
